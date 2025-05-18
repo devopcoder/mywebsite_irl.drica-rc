@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drica'o Alliance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #4b0082;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background-color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .post-form textarea {
+      width: 100%;
+      height: 100px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .post-form button {
+      padding: 0.5rem 1rem;
+      background-color: #4b0082;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .post {
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+    }
+    .reply {
+      margin-left: 1rem;
+      padding-left: 1rem;
+      border-left: 2px solid #ccc;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>Drica'o Alliance</header>
+  <div class="container">
+    <form class="post-form" id="postForm">
+      <textarea id="postText" placeholder="Post something..."></textarea>
+      <button type="submit">Post</button>
+    </form>
+    <div id="posts"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDN7NvPg_MG2eBcAs0itFq7RnBySs-azgM",
+      authDomain: "drica-o-alliance.firebaseapp.com",
+      projectId: "drica-o-alliance",
+      storageBucket: "drica-o-alliance.firebasestorage.app",
+      messagingSenderId: "207063443555",
+      appId: "1:207063443555:web:6e5a9820def4bf6845f056"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const postForm = document.getElementById('postForm');
+    const postText = document.getElementById('postText');
+    const postsDiv = document.getElementById('posts');
+
+    // Submit new post
+    postForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = postText.value.trim();
+      if (!text) return;
+      await addDoc(collection(db, 'posts'), {
+        text: text,
+        timestamp: new Date()
+      });
+      postText.value = '';
+    });
+
+    // Load posts in real-time
+    const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      postsDiv.innerHTML = '';
+      snapshot.forEach(doc => {
+        const post = doc.data();
+        const postElement = document.createElement('div');
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+          <p>${post.text}</p>
+        `;
+        postsDiv.appendChild(postElement);
+      });
+    });
+  </script>
+</body>
+</html>
