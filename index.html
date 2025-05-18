@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Drica'o Alliance</title>
+  <script type="module">
+    // Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABD2hqvtKvgiySmnC4TUgsnngU9_1m4ao",
+      authDomain: "dricao-alliancenorl.firebaseapp.com",
+      projectId: "dricao-alliancenorl",
+      storageBucket: "dricao-alliancenorl.firebasestorage.app",
+      messagingSenderId: "742658706466",
+      appId: "1:742658706466:web:86d870940e27a18f4c4e7b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Post handler
+    async function postMessage() {
+      const name = document.getElementById("name").value;
+      const message = document.getElementById("message").value;
+      await addDoc(collection(db, "posts"), { name, message });
+      alert("Posted!");
+      loadMessages(); // Refresh
+    }
+
+    // Load posts
+    async function loadMessages() {
+      const postsContainer = document.getElementById("posts");
+      postsContainer.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        postsContainer.innerHTML += `<p><strong>${data.name}</strong>: ${data.message}</p>`;
+      });
+    }
+
+    window.onload = () => {
+      loadMessages();
+      document.getElementById("submit").onclick = postMessage;
+    };
+  </script>
+</head>
+<body>
+  <h1>Drica'o Alliance</h1>
+  <input type="text" id="name" placeholder="Pangalan">
+  <br>
+  <textarea id="message" placeholder="Ilagay ang message mo..."></textarea>
+  <br>
+  <button id="submit">I-post</button>
+
+  <h2>📣 Mga Posts:</h2>
+  <div id="posts"></div>
+</body>
+</html>
