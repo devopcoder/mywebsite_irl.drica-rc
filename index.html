@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Black Social Board</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🌑 Post Board</h1>
+
+    <form id="postForm">
+      <input type="text" id="name" placeholder="Your name" required />
+      <input type="file" id="photo" accept="image/*" required />
+      <textarea id="message" placeholder="Your message..." required></textarea>
+      <button type="submit">📤 Post</button>
+    </form>
+
+    <h2>📝 Posts (<span id="count">0</span>)</h2>
+    <div id="posts"></div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
