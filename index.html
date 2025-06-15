@@ -1,28 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Black Social Board</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Send Message with Optional Image</title>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    (function () {
+      emailjs.init("public_40-BvMg7K_AoVgBkI"); // ✅ Your public key
+    })();
+  </script>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      background: #222;
+      color: white;
+    }
+
+    input[type="file"] {
+      background: #000;
+    }
+
+    button {
+      background-color: #00b894;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #019875;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>🌑PUBG💌</h2>
+  <h2>Send a Message</h2>
+  <form id="contact-form">
+    <input type="text" name="from_name" placeholder="Your Name" required>
+    <textarea name="message" placeholder="Your Message" required></textarea>
+    <input type="file" id="imageInput" accept="image/*">
+    <button type="submit">Send</button>
+  </form>
 
-    <form id="postForm">
-      <input type="text" id="name" placeholder="Your name" required />
-      <input type="file" id="photo" accept="image/*" required />
-      <textarea id="message" placeholder="Your message..." required></textarea>
-      <button type="submit">📤 Post</button>
-    </form>
+  <script>
+    document.getElementById("contact-form").addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    <h3>📝 Posts (<span id="count">0</span>)</h3>
-    <div id="posts"></div>
-  </div>
+      const name = this.from_name.value;
+      const message = this.message.value;
+      const fileInput = document.getElementById("imageInput");
 
-<h1> WEBSITE DEVELOP BY CHRISTANN </h1>
+      if (fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          sendEmail(name, message, reader.result);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        sendEmail(name, message, null);
+      }
+    });
 
-  <script type="module" src="script.js"></script>
+    function sendEmail(name, message, imageBase64) {
+      const formattedMessage = imageBase64
+        ? `${message}<br><br><strong>Image attached below:</strong><br><img src="${imageBase64}" width="300"/>`
+        : message;
+
+      emailjs.send("service_2szmje6", "template_m68z56f", {
+        from_name: name,
+        message: formattedMessage
+      }).then(function (response) {
+        alert("✅ Message sent successfully!");
+      }, function (error) {
+        console.error("❌ Failed to send message:", error);
+        alert("❌ Error sending message.");
+      });
+    }
+  </script>
 </body>
 </html>
